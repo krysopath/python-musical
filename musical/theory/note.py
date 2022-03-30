@@ -30,6 +30,9 @@ class Note:
     def __repr__(self):
         return "Note('%s%i')" % (self.note, self.octave)
 
+    def __hash__(self):
+        return hash(self)
+
     def __lt__(self, other):
         return self.index < other.index
 
