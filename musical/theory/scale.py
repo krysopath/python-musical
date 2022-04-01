@@ -31,6 +31,16 @@ NAMED_SCALES = {
     "locrian": (1, 2, 2, 1, 2, 2, 2),
 }
 
+# INVERTED_NAMED_SCALES = {v: k for k, v in NAMED_SCALES.items()}
+
+INVERTED_NAMED_SCALES = {}
+
+for k, v in NAMED_SCALES.items():
+    if v in INVERTED_NAMED_SCALES:
+        INVERTED_NAMED_SCALES[v].append(k)
+    else:
+        INVERTED_NAMED_SCALES[v] = [k]
+
 
 class Scale:
 
@@ -42,10 +52,11 @@ class Scale:
     def __init__(self, root, scale):
         self.root = root.at_octave(0)
         if isinstance(scale, str):
-            scale = Scale.intervals_from_name(scale)
+            intervals = Scale.intervals_from_name(scale)
         elif isinstance(scale, Scale):
-            scale = scale.intervals
-        self.intervals = tuple(scale)
+            intervals = scale.intervals
+
+        self.intervals = tuple(intervals)
 
     def __repr__(self):
         return "Scale(%s, %s)" % (self.root, self.intervals)
@@ -58,6 +69,16 @@ class Scale:
 
     def __iter__(self):
         return iter(self.get(i) for i in range(len(self)))
+
+    @property
+    def scale_name(self):
+        return INVERTED_NAMED_SCALES[self.intervals]
+
+    def relative_scale(self):
+        if self.scale_name[0] == "major":
+            return Scale(self.root.transpose(-3), "minor")
+        if self.scale_name[0] == "minor":
+            return Scale(self.root.transpose(3), "major")
 
     @classmethod
     def intervals_from_name(self, name):
