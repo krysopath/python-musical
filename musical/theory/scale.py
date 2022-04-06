@@ -70,6 +70,14 @@ class Scale:
     def __iter__(self):
         return iter(self.get(i) for i in range(len(self)))
 
+    def __eq__(self, other):
+        return all(
+            (
+                self.root.note == other.root.note,
+                self.intervals == other.intervals,
+            )
+        )
+
     @property
     def scale_name(self):
         return INVERTED_NAMED_SCALES[self.intervals]
